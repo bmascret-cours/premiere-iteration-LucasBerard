@@ -12,7 +12,7 @@ public class Jeu {
 
 	public Jeu(Couleur color) {
 		this.couleur = color;
-		this.pieces = ChessPiecesFactory.newPieces(this.couleur);
+		this.pieces = ChessPiecesFactory.newPieces(couleur);
 	}
 	
 	public String toString() {
@@ -58,7 +58,11 @@ public class Jeu {
 	           
 	public Couleur getPieceColor(int x, int y) {
 		Pieces p = findPiece(x, y);
-		return p.getCouleur();
+		//System.out.println(p);
+		if (p != null) {
+			return p.getCouleur();
+		}
+		return null;
 	}
 	           
 	/**

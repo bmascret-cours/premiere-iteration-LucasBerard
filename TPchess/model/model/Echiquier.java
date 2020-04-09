@@ -90,10 +90,4 @@ public class Echiquier implements BoardGames{
 		for (Jeu j : this.Jeux) { ret = ret + j.toString() + "\n"; }
 		return ret;
 	}
-	
-	public static void main(String[] a) {
-		Echiquier e = new Echiquier();
-		System.out.println(e);		
-		System.out.println(e.getPiecesIHM());		
-	}
 }
