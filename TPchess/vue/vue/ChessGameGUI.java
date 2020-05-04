@@ -122,6 +122,8 @@ public class ChessGameGUI extends JFrame implements  Observer, MouseListener, Mo
 	  if(chessPiece == null) return;
 	 
 	  chessPiece.setVisible(false);
+	  Component c =  chessBoard.findComponentAt(xInit, yInit);	 
+
 
 	  int x = 8*chessPiece.getLocation().x;
 	  int y = 8*chessPiece.getLocation().y;
@@ -129,7 +131,6 @@ public class ChessGameGUI extends JFrame implements  Observer, MouseListener, Mo
 	  y /= this.dim.height;
 	  xInit = 8*xInit/this.dim.width;
 	  yInit = 8*yInit/this.dim.height;
-	  Component c =  chessBoard.findComponentAt(xInit, yInit);	 
 	  if (this.chessGameControler.move(new Coord(xInit,yInit), new Coord(x,y))) {
 		  c =  chessBoard.findComponentAt(e.getX(), e.getY());
 		  if (c instanceof JLabel){
@@ -141,10 +142,9 @@ public class ChessGameGUI extends JFrame implements  Observer, MouseListener, Mo
 			  Container parent = (Container)c;
 			  parent.add( chessPiece );
 		  }
-	  } else {
+	  }
 	  Container parent = (Container)c;
 	  parent.add( chessPiece );
-	  }
 	  chessPiece.setVisible(true);
 	}
 	 
