@@ -38,18 +38,22 @@ public class ChessGameGUI extends JFrame implements  Observer, MouseListener, Mo
 	JLayeredPane layeredPane;
 	JPanel chessBoard;
 	JLabel chessPiece;
-	int xAdjustment;
-	int yAdjustment;
+	private int xAdjustment;
+	private int yAdjustment;
 	ChessGameControlers chessGameControler;
+	private Dimension dim;
+	private int xInit;
+	private int yInit;
 
 	public ChessGameGUI(String nom, ChessGameControlers Controller,  Dimension dim){
 		
 		this.chessGameControler = Controller;
+		this.dim = dim;
 	  
 	  //  Use a Layered Pane for this this application
 		layeredPane = new JLayeredPane();
 		getContentPane().add(layeredPane);
-		layeredPane.setPreferredSize(dim);
+		layeredPane.setPreferredSize(this.dim);
 		layeredPane.addMouseListener(this);
 		layeredPane.addMouseMotionListener(this);
 		layeredPane.setName(nom); // inutile ?
@@ -59,8 +63,8 @@ public class ChessGameGUI extends JFrame implements  Observer, MouseListener, Mo
 		chessBoard = new JPanel();
 		layeredPane.add(chessBoard, JLayeredPane.DEFAULT_LAYER);
 		chessBoard.setLayout( new GridLayout(8, 8) );
-		chessBoard.setPreferredSize( dim );
-		chessBoard.setBounds(0, 0, dim.width, dim.height);
+		chessBoard.setPreferredSize( this.dim );
+		chessBoard.setBounds(0, 0, this.dim.width, this.dim.height);
 	 
 		for (int i = 0; i < 64; i++) {
 			JPanel square = new JPanel( new BorderLayout() );
@@ -88,6 +92,9 @@ public class ChessGameGUI extends JFrame implements  Observer, MouseListener, Mo
 	public void mousePressed(MouseEvent e){
 	  chessPiece = null;
 	  Component c =  chessBoard.findComponentAt(e.getX(), e.getY());
+	  xInit = e.getX();
+	  yInit = e.getY();
+	  
 	 
 	  if (c instanceof JPanel) 
 		  return;
@@ -115,35 +122,31 @@ public class ChessGameGUI extends JFrame implements  Observer, MouseListener, Mo
 	  if(chessPiece == null) return;
 	 
 	  chessPiece.setVisible(false);
-	  String chemin  = chessPiece.getIcon().toString();
-	  int len = chemin.length()-1;
-	  char caract = chemin.charAt(len);
-	  while (caract != '/') {
-		  len -= 1;
-		  caract = chemin.charAt(len);
-	  }
-	  chemin = chemin.substring(len+1);
-	  String strPiece = "error";
-	  for (int i = 0; i < ChessPieceImage.values().length; i++) {
-		  if (chemin.equals(ChessPieceImage.values()[i].imageFile)) {
-			  strPiece = ChessPieceImage.values()[i].nom;
+
+	  int x = 8*chessPiece.getLocation().x;
+	  int y = 8*chessPiece.getLocation().y;
+	  x /= this.dim.width;
+	  y /= this.dim.height;
+	  xInit = 8*xInit/this.dim.width;
+	  yInit = 8*yInit/this.dim.height;
+	  Component c =  chessBoard.findComponentAt(xInit, yInit);	 
+	  if (this.chessGameControler.move(new Coord(xInit,yInit), new Coord(x,y))) {
+		  c =  chessBoard.findComponentAt(e.getX(), e.getY());
+		  if (c instanceof JLabel){
+			  Container parent = c.getParent();
+			  parent.remove(0);
+			  parent.add( chessPiece );
 		  }
+		  else {
+			  Container parent = (Container)c;
+			  parent.add( chessPiece );
+		  }
+	  } else {
+	  Container parent = (Container)c;
+	  parent.add( chessPiece );
 	  }
-	  System.out.print(strPiece);
-	  
-	  Component c =  chessBoard.findComponentAt(e.getX(), e.getY());	 
-	  if (c instanceof JLabel){
-		  Container parent = c.getParent();
-		  parent.remove(0);
-		  parent.add( chessPiece );
-	  }
-	  else {
-		  Container parent = (Container)c;
-		  parent.add( chessPiece );
-	  }
-	 
 	  chessPiece.setVisible(true);
-	  }
+	}
 	 
 	public void mouseClicked(MouseEvent e) {}
 	  
@@ -152,7 +155,7 @@ public class ChessGameGUI extends JFrame implements  Observer, MouseListener, Mo
 	public void mouseEntered(MouseEvent e){}
 			
 	public void mouseExited(MouseEvent e) {}
-
+	
 	@Override
 	public void update(Observable arg0, Object arg1) {
 		
