@@ -58,11 +58,10 @@ public class Jeu {
 	           
 	public Couleur getPieceColor(int x, int y) {
 		Pieces p = findPiece(x, y);
-		//System.out.println(p);
 		if (p != null) {
 			return p.getCouleur();
 		}
-		return null;
+		return Couleur.NOIRBLANC;
 	}
 	           
 	/**
