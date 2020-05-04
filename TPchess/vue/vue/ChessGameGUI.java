@@ -11,20 +11,28 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 
+import controler.ChessGameControlers;
+import controler.controlerLocal.ChessGameControler;
 import model.Coord;
 import model.Couleur;
+import model.PieceIHM;
+import model.observable.ChessGame;
 import tools.ChessImageProvider;
 import tools.ChessPieceImage;
 import tools.ChessPiecePos;
 
-public class ChessGameGUI extends JFrame implements MouseListener, MouseMotionListener{
+public class ChessGameGUI extends JFrame implements  Observer, MouseListener, MouseMotionListener{
 		
 	private static final long serialVersionUID = 1L;
 	JLayeredPane layeredPane;
@@ -32,24 +40,27 @@ public class ChessGameGUI extends JFrame implements MouseListener, MouseMotionLi
 	JLabel chessPiece;
 	int xAdjustment;
 	int yAdjustment;
+	ChessGameControlers chessGameControler;
 
-	ChessGameGUI(){
-		Dimension boardSize = new Dimension(600, 600);
+	public ChessGameGUI(String nom, ChessGameControlers Controller,  Dimension dim){
+		
+		this.chessGameControler = Controller;
 	  
 	  //  Use a Layered Pane for this this application
 		layeredPane = new JLayeredPane();
 		getContentPane().add(layeredPane);
-		layeredPane.setPreferredSize(boardSize);
+		layeredPane.setPreferredSize(dim);
 		layeredPane.addMouseListener(this);
 		layeredPane.addMouseMotionListener(this);
+		layeredPane.setName(nom); // inutile ?
 
 	  //Add a chess board to the Layered Pane 
 	 
 		chessBoard = new JPanel();
 		layeredPane.add(chessBoard, JLayeredPane.DEFAULT_LAYER);
 		chessBoard.setLayout( new GridLayout(8, 8) );
-		chessBoard.setPreferredSize( boardSize );
-		chessBoard.setBounds(0, 0, boardSize.width, boardSize.height);
+		chessBoard.setPreferredSize( dim );
+		chessBoard.setBounds(0, 0, dim.width, dim.height);
 	 
 		for (int i = 0; i < 64; i++) {
 			JPanel square = new JPanel( new BorderLayout() );
@@ -104,6 +115,22 @@ public class ChessGameGUI extends JFrame implements MouseListener, MouseMotionLi
 	  if(chessPiece == null) return;
 	 
 	  chessPiece.setVisible(false);
+	  String chemin  = chessPiece.getIcon().toString();
+	  int len = chemin.length()-1;
+	  char caract = chemin.charAt(len);
+	  while (caract != '/') {
+		  len -= 1;
+		  caract = chemin.charAt(len);
+	  }
+	  chemin = chemin.substring(len+1);
+	  String strPiece = "error";
+	  for (int i = 0; i < ChessPieceImage.values().length; i++) {
+		  if (chemin.equals(ChessPieceImage.values()[i].imageFile)) {
+			  strPiece = ChessPieceImage.values()[i].nom;
+		  }
+	  }
+	  System.out.print(strPiece);
+	  
 	  Component c =  chessBoard.findComponentAt(e.getX(), e.getY());	 
 	  if (c instanceof JLabel){
 		  Container parent = c.getParent();
@@ -125,14 +152,10 @@ public class ChessGameGUI extends JFrame implements MouseListener, MouseMotionLi
 	public void mouseEntered(MouseEvent e){}
 			
 	public void mouseExited(MouseEvent e) {}
-	 
-  public static void main(String[] args) {
-	  
-	  JFrame frame = new ChessGameGUI();
-	  frame.setDefaultCloseOperation(DISPOSE_ON_CLOSE );
-	  frame.pack();
-	  frame.setResizable(true);
-	  frame.setLocationRelativeTo( null );
-	  frame.setVisible(true);
-  }
+
+	@Override
+	public void update(Observable arg0, Object arg1) {
+		
+		System.out.println(chessGameControler.getMessage() + "\n");		
+	}
 }
